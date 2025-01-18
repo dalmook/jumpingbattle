@@ -135,3 +135,91 @@ h1 {
 .cell.clicked-effect {
   animation: clickEffect 0.3s forwards;
 }
+
+/* 모달 스타일 */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 100; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto; /* 10% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px; /* Could be more or less, depending on screen size */
+  border-radius: 10px;
+  position: relative;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#username {
+  width: 80%;
+  padding: 8px;
+  margin: 10px 0;
+  font-size: 1em;
+}
+
+#submitName, #closeModal {
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+#submitName {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#submitName:hover {
+  background-color: #45a049;
+}
+
+#closeModal {
+  background-color: #f44336;
+  color: white;
+}
+
+#closeModal:hover {
+  background-color: #da190b;
+}
+
+/* High Scores List */
+#highScoresList {
+  list-style-type: decimal;
+  padding-left: 20px;
+  text-align: left;
+}
+
+#highScoresList li {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
