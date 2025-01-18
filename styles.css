@@ -9,7 +9,13 @@
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(45deg, #ffefba, #ffffff);
+  /* 배경 이미지 설정 (나중에 추가) */
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('images/space.webp'); /* 배경 이미지 경로 설정 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
   min-height: 100vh;
@@ -25,23 +31,21 @@ body {
   max-width: 600px;
   padding: 20px;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.482); /* 약간 투명한 배경 */
   border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* 그림자 추가 */
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* 제목 스타일 */
 h1 {
   margin-bottom: 20px;
   font-size: 2em;
-  color: #333;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  color: #ffffff; /* 배경과 대비되는 색상으로 변경 */
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.7); /* 텍스트 가독성 향상 */
 }
 
-/* 게임 시작 버튼 스타일 */
 #startGameButton {
   padding: 15px 30px;
   font-size: 1.2em;
@@ -59,11 +63,10 @@ h1 {
   transform: translateY(-2px);
 }
 
-/* 높은 점수 목록 컨테이너 스타일링 */
 .high-scores-container {
   margin-top: 15px;
   width: 100%;
-  background-color: #f9f9f9;
+  background-color: rgba(255, 255, 255, 0.9); /* 약간 투명한 배경 */
   padding: 15px;
   border-radius: 10px;
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
@@ -84,7 +87,6 @@ h1 {
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* 정보 컨테이너 스타일 */
 .info-container {
   display: flex;
   gap: 20px;
@@ -94,10 +96,18 @@ h1 {
 
 #score, #timer {
   font-size: 1.5em;
-  color: #333;
+  color: #ffffff; /* 배경과 대비되는 색상으로 변경 */
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
 }
 
-/* 타일 그리드 스타일 */
+.info p {
+  margin-top: 20px;
+  color: #ffffff; /* 배경과 대비되는 색상으로 변경 */
+  font-size: 1em;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+}
+
+/* 5x5 격자 컨테이너 */
 .grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -178,11 +188,12 @@ h1 {
 /* 점수 안내 문구 */
 .info p {
   margin-top: 20px;
-  color: #555;
+  color: #ffffff;
   font-size: 1em;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
 }
 
-/* 반응형 텍스트 조정 */
+/* 반응형 디자인 */
 @media (max-width: 600px) {
   h1 {
     font-size: 1.5em;
@@ -233,7 +244,7 @@ h1 {
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
 }
 
 .modal-content {
@@ -315,6 +326,22 @@ h1 {
 #closeModal:hover {
   background-color: #da190b;
   transform: translateY(-2px);
+}
+
+/* High Scores List */
+.high-scores-container ol {
+  list-style-type: decimal;
+  padding-left: 20px;
+  text-align: left;
+}
+
+.high-scores-container li {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  padding: 5px 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 /* 홈 버튼 스타일 */
