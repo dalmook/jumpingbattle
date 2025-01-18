@@ -1,4 +1,5 @@
-/* 글로벌 box-sizing 설정 */
+@import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300&family=Gamja+Flower&family=Gowun+Dodum&display=swap');
+    
 *,
 *::before,
 *::after {
@@ -16,7 +17,7 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Gowun Dodum", sans-serif;
   text-align: center;
   min-height: 100vh;
   display: flex;
