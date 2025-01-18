@@ -1,3 +1,10 @@
+/* 글로벌 box-sizing 설정 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* 전체 레이아웃 스타일 */
 body {
   margin: 0;
@@ -18,11 +25,15 @@ body {
   max-width: 600px;
   padding: 20px;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* 제목 스타일 */
 h1 {
   margin-bottom: 20px;
   font-size: 2em;
@@ -30,6 +41,7 @@ h1 {
   text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
 
+/* 게임 시작 버튼 스타일 */
 #startGameButton {
   padding: 15px 30px;
   font-size: 1.2em;
@@ -47,8 +59,10 @@ h1 {
   transform: translateY(-2px);
 }
 
+/* 높은 점수 목록 컨테이너 스타일링 */
 .high-scores-container {
   margin-top: 15px;
+  width: 100%;
   background-color: #f9f9f9;
   padding: 15px;
   border-radius: 10px;
@@ -70,6 +84,7 @@ h1 {
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
+/* 정보 컨테이너 스타일 */
 .info-container {
   display: flex;
   gap: 20px;
@@ -82,23 +97,16 @@ h1 {
   color: #333;
 }
 
-.info p {
-  margin-top: 20px;
-  color: #555;
-  font-size: 1em;
-}
-
-/* 5x5 격자 컨테이너 */
+/* 타일 그리드 스타일 */
 .grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
   gap: 10px;
-  width: 90vw;
+  width: 100%;
   max-width: 500px;
-  height: 90vw;
-  max-height: 500px;
-  margin: 20px auto; /* 중앙 정렬을 위해 추가 */
+  aspect-ratio: 1 / 1; /* 정사각형 유지 */
+  margin: 20px auto; /* 중앙 정렬 */
 }
 
 /* 각 칸 스타일 */
@@ -108,14 +116,12 @@ h1 {
   border: 2px solid #aaa;
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-  /* 초기색 (연한 그레이톤) */
   background-color: #e0e0e0;
-  /* 살짝 입체감 주기 */
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
   border-radius: 8px;
 }
 
-/* 클릭 시 톡 튀어나오는 효과 */
+/* 클릭 시 효과 */
 .cell:active {
   transform: scale(0.95);
   box-shadow: 0 3px 10px rgba(0,0,0,0.2) inset;
@@ -126,10 +132,12 @@ h1 {
   background-color: #ff4d4d;
   animation: blinkRed 1s alternate infinite;
 }
+
 .blue {
   background-color: #4d94ff;
   animation: blinkBlue 1s alternate infinite;
 }
+
 .green {
   background-color: #4dff4d;
   animation: blinkGreen 1s alternate infinite;
@@ -167,6 +175,54 @@ h1 {
   animation: clickEffect 0.3s forwards;
 }
 
+/* 점수 안내 문구 */
+.info p {
+  margin-top: 20px;
+  color: #555;
+  font-size: 1em;
+}
+
+/* 반응형 텍스트 조정 */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.5em;
+  }
+
+  .info-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #score, #timer {
+    font-size: 1.2em;
+  }
+
+  .info p {
+    font-size: 0.9em;
+  }
+
+  #startGameButton {
+    width: 100%;
+    padding: 15px;
+  }
+
+  /* 모바일 화면에서 격자 중앙 정렬 보정 */
+  .grid {
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1 / 1;
+  }
+
+  .high-scores-container {
+    padding: 10px;
+  }
+
+  .high-scores-container li {
+    font-size: 1em;
+    padding: 5px;
+  }
+}
+
 /* 모달 스타일 */
 .modal {
   display: none; /* Hidden by default */
@@ -182,7 +238,7 @@ h1 {
 
 .modal-content {
   background-color: #fefefe;
-  margin: 10% auto; /* 10% from the top and centered */
+  margin: 5% auto; /* 5% from the top and centered */
   padding: 30px 20px;
   border: 1px solid #888;
   width: 80%;
@@ -259,22 +315,6 @@ h1 {
 #closeModal:hover {
   background-color: #da190b;
   transform: translateY(-2px);
-}
-
-/* High Scores List */
-.high-scores-container ol {
-  list-style-type: decimal;
-  padding-left: 20px;
-  text-align: left;
-}
-
-.high-scores-container li {
-  margin-bottom: 10px;
-  font-size: 1.1em;
-  padding: 5px 10px;
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 /* 홈 버튼 스타일 */
