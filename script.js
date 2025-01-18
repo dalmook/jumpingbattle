@@ -1,3 +1,18 @@
+// Firebase 설정 - 본인의 Firebase 프로젝트 설정으로 대체하세요.
+const firebaseConfig = {
+  apiKey: "AIzaSyDvaIrvq4mRygP2eN6KxOxl0vsnzUMSIns",
+  authDomain: "fingderbattle.firebaseapp.com",
+  projectId: "fingderbattle",
+  storageBucket: "fingderbattle.firebasestorage.app",
+  messagingSenderId: "621739176543",
+  appId: "1:621739176543:web:ec7ce1ab4908933b0ae1ea"
+};
+
+// Firebase 초기화
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// DOM 요소 가져오기
 const gridSize = 5;
 const gameGrid = document.getElementById('gameGrid');
 const scoreDisplay = document.getElementById('score');
@@ -5,8 +20,17 @@ const timerDisplay = document.getElementById('timer');
 const warningSound = document.getElementById('warningSound');
 const successSound = document.getElementById('successSound');
 
+const nameModal = document.getElementById('nameModal');
+const finalScoreSpan = document.getElementById('finalScore');
+const usernameInput = document.getElementById('username');
+const submitNameButton = document.getElementById('submitName');
+const closeModalButton = document.getElementById('closeModal');
+
+const highScoresModal = document.getElementById('highScoresModal');
+const highScoresList = document.getElementById('highScoresList');
+
 let score = 0;
-let timeLeft = 30; // 30초
+let timeLeft = 60; // 60초로 변경
 let gameIntervalId;
 let flickerIntervalId;
 let isGameOver = false;
@@ -31,9 +55,17 @@ startGame();
 function startGame() {
   isGameOver = false;
   score = 0;
-  timeLeft = 30;
+  timeLeft = 60; // 60초로 변경
   scoreDisplay.textContent = `점수: ${score}`;
   timerDisplay.textContent = `남은 시간: ${timeLeft}초`;
+
+  // 모든 셀 초기화
+  cells.forEach(cell => {
+    cell.classList.remove('red', 'blue', 'green', 'clicked', 'clicked-effect');
+    const colors = ['red', 'blue', 'green'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    cell.classList.add(randomColor);
+  });
 
   // 깜빡임 시작
   startFlicker();
@@ -52,13 +84,22 @@ function endGame() {
   isGameOver = true;
   clearInterval(flickerIntervalId);
   clearInterval(gameIntervalId);
-  alert(`게임 종료! 최종 점수: ${score}`);
-  // 게임을 재시작할지 여부를 묻는 옵션 추가 가능
+  
+  // 게임 종료 알림
+  // alert(`게임 종료! 최종 점수: ${score}`);
+  
+  // 최종 점수 표시
+  finalScoreSpan.textContent = score;
+  
+  // 이름 입력 모달 표시
+  nameModal.style.display = 'block';
 }
 
 // 셀이 일정 간격으로 색이 바뀌도록 하는 함수
 function startFlicker() {
   flickerIntervalId = setInterval(() => {
+    if (isGameOver) return;
+    
     // 3~6개 정도 랜덤으로 동시에 깜빡이도록
     const numberOfFlashes = Math.floor(Math.random() * 4) + 3; 
     for (let i = 0; i < numberOfFlashes; i++) {
@@ -144,3 +185,80 @@ document.addEventListener('touchstart', function(event) {
   }
   lastTap = currentTime;
 }, false);
+
+// 이름 입력 모달 닫기 기능
+const closeButtons = document.querySelectorAll('.close');
+closeButtons.forEach(btn => {
+  btn.onclick = function() {
+    nameModal.style.display = 'none';
+    highScoresModal.style.display = 'block';
+    displayHighScores();
+  };
+});
+
+// 제출 버튼 클릭 시
+submitNameButton.addEventListener('click', () => {
+  const username = usernameInput.value.trim();
+  if (username === "") {
+    alert("이름을 입력해주세요.");
+    return;
+  }
+  saveScore(username, score);
+  nameModal.style.display = 'none';
+  highScoresModal.style.display = 'block';
+  displayHighScores();
+});
+
+// 닫기 버튼 클릭 시
+closeModalButton.addEventListener('click', () => {
+  nameModal.style.display = 'none';
+  highScoresModal.style.display = 'block';
+  displayHighScores();
+});
+
+// 클릭 외부 영역 닫기
+window.onclick = function(event) {
+  if (event.target == nameModal) {
+    nameModal.style.display = 'none';
+    highScoresModal.style.display = 'block';
+    displayHighScores();
+  }
+  if (event.target == highScoresModal) {
+    highScoresModal.style.display = 'none';
+  }
+};
+
+// Firebase에 점수 저장
+function saveScore(username, score) {
+  db.collection("highScores").add({
+    name: username,
+    score: score,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  })
+  .then(() => {
+    console.log("점수가 저장되었습니다.");
+  })
+  .catch((error) => {
+    console.error("점수 저장 오류: ", error);
+  });
+}
+
+// Firebase에서 높은 점수 순으로 불러오기
+function displayHighScores() {
+  highScoresList.innerHTML = ""; // 기존 리스트 초기화
+  db.collection("highScores")
+    .orderBy("score", "desc")
+    .limit(10) // 상위 10개만 표시
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const listItem = document.createElement('li');
+        listItem.textContent = `${data.name}: ${data.score}점`;
+        highScoresList.appendChild(listItem);
+      });
+    })
+    .catch((error) => {
+      console.error("점수 불러오기 오류: ", error);
+    });
+}
