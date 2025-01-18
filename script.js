@@ -55,11 +55,7 @@ function startFlicker() {
 }
 
 function handleCellClick(cell) {
-  // 방금 클릭한 셀이 회색으로 변경되고, 일정 시간 후 다시 랜덤 색상으로 변경
-  cell.classList.remove('red', 'blue', 'green');
-  cell.classList.add('clicked');
-  
-  // 점수 업데이트
+  // 현재 색상 확인 후 점수 업데이트
   if (cell.classList.contains('red')) {
     score -= 5;
   } else if (cell.classList.contains('blue')) {
@@ -71,6 +67,10 @@ function handleCellClick(cell) {
   
   // 속도 조절
   adjustSpeed();
+
+  // 방금 클릭한 셀이 회색으로 변경되고, 일정 시간 후 다시 랜덤 색상으로 변경
+  cell.classList.remove('red', 'blue', 'green');
+  cell.classList.add('clicked');
 
   // 버튼이 회색으로 변경된 후 랜덤 색상으로 돌아감
   setTimeout(() => {
