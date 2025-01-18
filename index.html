@@ -15,7 +15,9 @@
     <h1>5×5 반짝반짝 점수 게임</h1>
     <button id="startGameButton">게임 시작</button>
     <h2>높은 점수 기록</h2>
-    <ol id="initialHighScoresList"></ol>
+    <div class="high-scores-container">
+      <ol id="initialHighScoresList"></ol>
+    </div>
   </div>
 
   <!-- 게임 화면 -->
@@ -46,8 +48,10 @@
       <p>당신의 점수는 <span id="finalScore">0</span>점입니다.</p>
       <label for="username">이름을 입력하세요:</label>
       <input type="text" id="username" name="username" maxlength="20" />
-      <button id="submitName">제출</button>
-      <button id="closeModal">닫기</button>
+      <div class="modal-buttons">
+        <button id="submitName">제출</button>
+        <button id="closeModal">닫기</button>
+      </div>
     </div>
   </div>
   
@@ -57,7 +61,9 @@
       <span class="close">&times;</span>
       <h2>높은 점수 기록</h2>
       <button id="homeButton" class="home-button">처음으로</button>
-      <ol id="highScoresList"></ol>
+      <div class="high-scores-container">
+        <ol id="highScoresList"></ol>
+      </div>
     </div>
   </div>
   

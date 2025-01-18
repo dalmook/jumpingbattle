@@ -98,10 +98,10 @@ function endGame() {
   isGameOver = true;
   clearInterval(flickerIntervalId);
   clearInterval(gameIntervalId);
-  
+
   // 최종 점수 표시
   finalScoreSpan.textContent = score;
-  
+
   // 이름 입력 모달 표시
   nameModal.style.display = 'block';
 }
@@ -110,7 +110,7 @@ function endGame() {
 function startFlicker() {
   flickerIntervalId = setInterval(() => {
     if (isGameOver) return;
-    
+
     // 3~6개 정도 랜덤으로 동시에 깜빡이도록
     const numberOfFlashes = Math.floor(Math.random() * 4) + 3; 
     for (let i = 0; i < numberOfFlashes; i++) {
@@ -304,6 +304,9 @@ function loadInitialHighScores() {
 
 // 게임 상태 초기화 함수
 function resetGame() {
+  // 게임 화면 숨기기
+  gameScreen.style.display = 'none';
+  
   // 모든 셀 초기화
   cells.forEach(cell => {
     cell.classList.remove('red', 'blue', 'green', 'clicked', 'clicked-effect');
@@ -315,6 +318,8 @@ function resetGame() {
   // 타이머 및 점수 초기화
   score = 0;
   timeLeft = 60;
+  
+  // 타이머 및 점수 표시 업데이트
   scoreDisplay.textContent = `점수: ${score}`;
   timerDisplay.textContent = `남은 시간: ${timeLeft}초`;
 
