@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>5×5 반짝반짝 게임</title>
+  <style>
+    /* 전체 레이아웃 스타일 */
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(45deg, #ffefba, #ffffff);
+      font-family: sans-serif;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 2em;
+      color: #333;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    #score {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+    }
+
+    /* 5x5 격자 컨테이너 */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 80px);
+      grid-template-rows: repeat(5, 80px);
+      gap: 10px;
+    }
+
+    /* 각 칸 스타일 */
+    .cell {
+      width: 80px;
+      height: 80px;
+      border: 2px solid #aaa;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.3s ease;
+      /* 초기색 (연한 그레이톤) */
+      background-color: #e0e0e0;
+      /* 살짝 입체감 주기 */
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    /* 클릭 시 톡 튀어나오는 효과 */
+    .cell:active {
+      transform: scale(0.95);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2) inset;
+    }
+
+    /* 색상별 클래스 */
+    .red {
+      background-color: #ff4d4d;
+      animation: blinkRed 0.5s alternate infinite;
+    }
+    .blue {
+      background-color: #4d94ff;
+      animation: blinkBlue 0.5s alternate infinite;
+    }
+    .green {
+      background-color: #4dff4d;
+      animation: blinkGreen 0.5s alternate infinite;
+    }
+
+    /* 반짝이는 애니메이션 */
+    @keyframes blinkRed {
+      0% { box-shadow: 0 0 10px 5px rgba(255, 77, 77, 0.6); }
+      100% { box-shadow: 0 0 10px 5px rgba(255, 77, 77, 0.1); }
+    }
+
+    @keyframes blinkBlue {
+      0% { box-shadow: 0 0 10px 5px rgba(77, 148, 255, 0.6); }
+      100% { box-shadow: 0 0 10px 5px rgba(77, 148, 255, 0.1); }
+    }
+
+    @keyframes blinkGreen {
+      0% { box-shadow: 0 0 10px 5px rgba(77, 255, 77, 0.6); }
+      100% { box-shadow: 0 0 10px 5px rgba(77, 255, 77, 0.1); }
+    }
+
+    /* 점수 안내 문구 */
+    .info {
+      margin-top: 20px;
+      color: #555;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>5×5 반짝반짝 점수 게임</h1>
+  <div id="score">점수: 0</div>
+  <div class="grid" id="gameGrid"></div>
+  <div class="info">
+    <p>빨간색: -5점<br>
+       파란색: +5점<br>
+       초록색: 안전 (0점)</p>
+  </div>
+
+  <script>
+    const gridSize = 5;
+    const gameGrid = document.getElementById('gameGrid');
+    const scoreDisplay = document.getElementById('score');
+
+    let score = 0;
+
+    // 각 칸을 생성해서 grid에 추가
+    for (let i = 0; i < gridSize * gridSize; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.addEventListener('click', () => {
+        // 클릭 시 색상에 따른 점수 변화
+        if (cell.classList.contains('red')) {
+          score -= 5;
+        } else if (cell.classList.contains('blue')) {
+          score += 5;
+        } 
+        // green은 점수 변화 없음
+
+        scoreDisplay.textContent = `점수: ${score}`;
+        // 점수에 따라 게임 속도 조절
+        adjustSpeed();
+      });
+      gameGrid.appendChild(cell);
+    }
+
+    // 셀들을 배열로 가져오기
+    const cells = document.querySelectorAll('.cell');
+
+    // 셀이 일정 간격으로 색이 바뀌도록 하는 함수
+    let intervalId;
+    let baseInterval = 1000; // 기본 속도 (1초)
+    function startFlicker() {
+      intervalId = setInterval(() => {
+        // 3~6개 정도 랜덤으로 동시에 깜빡이도록
+        const numberOfFlashes = Math.floor(Math.random() * 4) + 3; 
+        for (let i = 0; i < numberOfFlashes; i++) {
+          const randomIndex = Math.floor(Math.random() * cells.length);
+          const randomCell = cells[randomIndex];
+
+          // 이전 색상 제거
+          randomCell.classList.remove('red', 'blue', 'green');
+
+          // 새 색상 랜덤 지정 (빨강, 파랑, 초록)
+          const colors = ['red', 'blue', 'green'];
+          const randomColor = colors[Math.floor(Math.random() * colors.length)];
+          randomCell.classList.add(randomColor);
+        }
+      }, baseInterval);
+    }
+
+    // 점수가 높아질수록 interval을 점점 빠르게
+    function adjustSpeed() {
+      // 최저한의 인터벌(200ms)까지만 줄어들도록 제한
+      let newInterval = 1000 - (score * 10);
+      if (newInterval < 200) {
+        newInterval = 200;
+      }
+      // interval이 바뀌었다면, clear 후 다시 start
+      if (newInterval !== baseInterval) {
+        baseInterval = newInterval;
+        clearInterval(intervalId);
+        startFlicker();
+      }
+    }
+
+    // 게임 시작
+    startFlicker();
+  </script>
+</body>
+</html>
