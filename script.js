@@ -44,8 +44,8 @@ let isGameOver = false;
 // baseInterval을 startFlicker 호출 전에 선언
 let baseInterval = 1000; // 기본 속도 (1초)
 
-// 각 칸을 생성해서 grid에 추가
-for (let i = 0; i < 25; i++) { // 5x5 격자
+// 각 칸을 생성해서 grid에 추가 (5x5 격자)
+for (let i = 0; i < 25; i++) {
   const cell = document.createElement('div');
   cell.classList.add('cell');
   cell.addEventListener('click', () => handleCellClick(cell));
@@ -234,6 +234,7 @@ closeModalButton.addEventListener('click', () => {
 homeButton.addEventListener('click', () => {
   highScoresModal.style.display = 'none';
   startScreen.style.display = 'block';
+  resetGame(); // 게임 상태 초기화
 });
 
 // 클릭 외부 영역 닫기
@@ -299,4 +300,31 @@ function loadInitialHighScores() {
     .catch((error) => {
       console.error("초기 점수 불러오기 오류: ", error);
     });
+}
+
+// 게임 상태 초기화 함수
+function resetGame() {
+  // 모든 셀 초기화
+  cells.forEach(cell => {
+    cell.classList.remove('red', 'blue', 'green', 'clicked', 'clicked-effect');
+    const colors = ['red', 'blue', 'green'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    cell.classList.add(randomColor);
+  });
+
+  // 타이머 및 점수 초기화
+  score = 0;
+  timeLeft = 60;
+  scoreDisplay.textContent = `점수: ${score}`;
+  timerDisplay.textContent = `남은 시간: ${timeLeft}초`;
+
+  // 인터벌 클리어
+  clearInterval(flickerIntervalId);
+  clearInterval(gameIntervalId);
+
+  // baseInterval 초기화
+  baseInterval = 1000;
+
+  // 타이머 및 깜빡임 상태 초기화
+  isGameOver = false;
 }

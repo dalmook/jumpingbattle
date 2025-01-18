@@ -68,6 +68,7 @@ h1 {
   max-width: 500px;
   height: 90vw;
   max-height: 500px;
+  margin: 0 auto; /* 중앙 정렬을 위해 추가 */
 }
 
 /* 각 칸 스타일 */
@@ -155,6 +156,14 @@ h1 {
   #startGameButton {
     width: 100%;
     padding: 15px;
+  }
+
+  /* 모바일 화면에서 격자 중앙 정렬 보정 */
+  .grid {
+    width: 95vw;
+    height: 95vw;
+    max-width: 400px;
+    max-height: 400px;
   }
 }
 
