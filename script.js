@@ -11,6 +11,9 @@ let gameIntervalId;
 let flickerIntervalId;
 let isGameOver = false;
 
+// baseInterval을 startFlicker 호출 전에 선언
+let baseInterval = 1000; // 기본 속도 (1초)
+
 // 각 칸을 생성해서 grid에 추가
 for (let i = 0; i < gridSize * gridSize; i++) {
   const cell = document.createElement('div');
@@ -54,7 +57,6 @@ function endGame() {
 }
 
 // 셀이 일정 간격으로 색이 바뀌도록 하는 함수
-let baseInterval = 1000; // 기본 속도 (1초)
 function startFlicker() {
   flickerIntervalId = setInterval(() => {
     // 3~6개 정도 랜덤으로 동시에 깜빡이도록
