@@ -233,19 +233,11 @@ closeModalButton.addEventListener('click', () => {
 // 홈 버튼 클릭 시
 homeButton.addEventListener('click', () => {
   highScoresModal.style.display = 'none';
-  startScreen.style.display = 'block';
-  resetGame(); // 게임 상태 초기화
+  window.location.reload(); // 페이지 새로고침하여 초기화
 });
 
-// 클릭 외부 영역 닫기
-window.onclick = function(event) {
-  if (event.target == nameModal) {
-    nameModal.style.display = 'none';
-  }
-  if (event.target == highScoresModal) {
-    highScoresModal.style.display = 'none';
-  }
-};
+// 기존의 window.onclick 이벤트 리스너를 제거했습니다.
+// 이로 인해 모달 외부를 클릭해도 모달이 닫히지 않습니다.
 
 // Firebase에 점수 저장
 function saveScore(username, score) {
