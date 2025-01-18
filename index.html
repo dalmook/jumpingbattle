@@ -5,13 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>5×5 반짝반짝 게임</title>
   <link rel="stylesheet" href="styles.css" />
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <h1>5×5 반짝반짝 점수 게임</h1>
   
   <div class="info-container">
     <div id="score">점수: 0</div>
-    <div id="timer">남은 시간: 30초</div>
+    <div id="timer">남은 시간: 60초</div>
   </div>
   
   <div class="grid" id="gameGrid"></div>
@@ -25,7 +28,29 @@
   <!-- 사운드 요소 -->
   <audio id="warningSound" src="sounds/warning.mp3"></audio>
   <audio id="successSound" src="sounds/success.mp3"></audio>
-
+  
+  <!-- 이름 입력 모달 -->
+  <div id="nameModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>게임 종료!</h2>
+      <p>당신의 점수는 <span id="finalScore">0</span>점입니다.</p>
+      <label for="username">이름을 입력하세요:</label>
+      <input type="text" id="username" name="username" maxlength="20" />
+      <button id="submitName">제출</button>
+      <button id="closeModal">닫기</button>
+    </div>
+  </div>
+  
+  <!-- 기록 표시 모달 -->
+  <div id="highScoresModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>높은 점수 기록</h2>
+      <ol id="highScoresList"></ol>
+    </div>
+  </div>
+  
   <script src="script.js"></script>
 </body>
 </html>
