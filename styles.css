@@ -13,11 +13,38 @@ body {
   overflow: hidden;
 }
 
+.screen {
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+}
+
 h1 {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   font-size: 2em;
   color: #333;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+#startGameButton {
+  padding: 15px 30px;
+  font-size: 1.2em;
+  cursor: pointer;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+#startGameButton:hover {
+  background-color: #45a049;
+}
+
+#initialHighScoresList {
+  list-style-type: decimal;
+  padding-left: 20px;
+  text-align: left;
 }
 
 .info-container {
@@ -124,6 +151,11 @@ h1 {
   .info p {
     font-size: 0.9em;
   }
+
+  #startGameButton {
+    width: 100%;
+    padding: 15px;
+  }
 }
 
 /* 클릭 시 추가 애니메이션 효과 */
@@ -213,13 +245,32 @@ h1 {
 }
 
 /* High Scores List */
-#highScoresList {
+#highScoresList, #initialHighScoresList {
   list-style-type: decimal;
   padding-left: 20px;
   text-align: left;
 }
 
-#highScoresList li {
+#highScoresList li, #initialHighScoresList li {
   margin-bottom: 10px;
   font-size: 1.1em;
+}
+
+/* 홈 버튼 스타일 */
+.home-button {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  padding: 5px 10px;
+  font-size: 0.9em;
+  cursor: pointer;
+  border: none;
+  background-color: #2196F3;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+  background-color: #0b7dda;
 }
