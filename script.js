@@ -13,10 +13,15 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // DOM 요소 가져오기
-const gridSize = 5;
+const startScreen = document.getElementById('startScreen');
+const startGameButton = document.getElementById('startGameButton');
+const initialHighScoresList = document.getElementById('initialHighScoresList');
+
+const gameScreen = document.getElementById('gameScreen');
 const gameGrid = document.getElementById('gameGrid');
 const scoreDisplay = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
+
 const warningSound = document.getElementById('warningSound');
 const successSound = document.getElementById('successSound');
 
@@ -28,6 +33,7 @@ const closeModalButton = document.getElementById('closeModal');
 
 const highScoresModal = document.getElementById('highScoresModal');
 const highScoresList = document.getElementById('highScoresList');
+const homeButton = document.getElementById('homeButton');
 
 let score = 0;
 let timeLeft = 60; // 60초로 변경
@@ -39,7 +45,7 @@ let isGameOver = false;
 let baseInterval = 1000; // 기본 속도 (1초)
 
 // 각 칸을 생성해서 grid에 추가
-for (let i = 0; i < gridSize * gridSize; i++) {
+for (let i = 0; i < 25; i++) { // 5x5 격자
   const cell = document.createElement('div');
   cell.classList.add('cell');
   cell.addEventListener('click', () => handleCellClick(cell));
@@ -49,9 +55,17 @@ for (let i = 0; i < gridSize * gridSize; i++) {
 // 셀들을 배열로 가져오기
 const cells = document.querySelectorAll('.cell');
 
-// 게임 시작 시 타이머와 깜빡임 시작
-startGame();
+// 게임 시작 화면에서 높은 점수 로드
+loadInitialHighScores();
 
+// "게임 시작" 버튼 클릭 시 게임 화면으로 전환
+startGameButton.addEventListener('click', () => {
+  startScreen.style.display = 'none';
+  gameScreen.style.display = 'block';
+  startGame();
+});
+
+// 게임 시작
 function startGame() {
   isGameOver = false;
   score = 0;
@@ -84,9 +98,6 @@ function endGame() {
   isGameOver = true;
   clearInterval(flickerIntervalId);
   clearInterval(gameIntervalId);
-  
-  // 게임 종료 알림
-  // alert(`게임 종료! 최종 점수: ${score}`);
   
   // 최종 점수 표시
   finalScoreSpan.textContent = score;
@@ -190,9 +201,12 @@ document.addEventListener('touchstart', function(event) {
 const closeButtons = document.querySelectorAll('.close');
 closeButtons.forEach(btn => {
   btn.onclick = function() {
-    nameModal.style.display = 'none';
-    highScoresModal.style.display = 'block';
-    displayHighScores();
+    if (btn.closest('#nameModal')) {
+      nameModal.style.display = 'none';
+    }
+    if (btn.closest('#highScoresModal')) {
+      highScoresModal.style.display = 'none';
+    }
   };
 });
 
@@ -216,12 +230,16 @@ closeModalButton.addEventListener('click', () => {
   displayHighScores();
 });
 
+// 홈 버튼 클릭 시
+homeButton.addEventListener('click', () => {
+  highScoresModal.style.display = 'none';
+  startScreen.style.display = 'block';
+});
+
 // 클릭 외부 영역 닫기
 window.onclick = function(event) {
   if (event.target == nameModal) {
     nameModal.style.display = 'none';
-    highScoresModal.style.display = 'block';
-    displayHighScores();
   }
   if (event.target == highScoresModal) {
     highScoresModal.style.display = 'none';
@@ -260,5 +278,25 @@ function displayHighScores() {
     })
     .catch((error) => {
       console.error("점수 불러오기 오류: ", error);
+    });
+}
+
+// 시작 화면에서 초기 높은 점수 로드
+function loadInitialHighScores() {
+  initialHighScoresList.innerHTML = ""; // 기존 리스트 초기화
+  db.collection("highScores")
+    .orderBy("score", "desc")
+    .limit(5) // 상위 5개만 표시
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const listItem = document.createElement('li');
+        listItem.textContent = `${data.name}: ${data.score}점`;
+        initialHighScoresList.appendChild(listItem);
+      });
+    })
+    .catch((error) => {
+      console.error("초기 점수 불러오기 오류: ", error);
     });
 }
