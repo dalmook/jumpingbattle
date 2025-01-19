@@ -24,6 +24,8 @@ const timerDisplay = document.getElementById('timer');
 
 const warningSound = document.getElementById('warningSound');
 const successSound = document.getElementById('successSound');
+const skullSound = document.getElementById('skullSound'); // 해골 등장 사운드
+const angelSound = document.getElementById('angelSound'); // 천사 등장 사운드
 
 const nameModal = document.getElementById('nameModal');
 const finalScoreSpan = document.getElementById('finalScore');
@@ -39,6 +41,12 @@ let score = 0;
 let timeLeft = 60; // 60초로 변경
 let gameIntervalId;
 let flickerIntervalId;
+let skullTimeoutIds = []; // 해골 등장 타이머 배열
+let removeSkullTimeoutIds = []; // 해골 제거 타이머 배열
+let angelTimeoutIds = []; // 천사 등장 타이머 배열
+let removeAngelTimeoutIds = []; // 천사 제거 타이머 배열
+let skullCount = 0; // 해골 등장 횟수
+let angelCount = 0; // 천사 등장 횟수
 let isGameOver = false;
 
 // baseInterval을 startFlicker 호출 전에 선언
@@ -73,9 +81,12 @@ function startGame() {
   scoreDisplay.textContent = `점수: ${score}`;
   timerDisplay.textContent = `남은 시간: ${timeLeft}초`;
 
+  skullCount = 0; // 해골 등장 횟수 초기화
+  angelCount = 0; // 천사 등장 횟수 초기화
+
   // 모든 셀 초기화
   cells.forEach(cell => {
-    cell.classList.remove('red', 'blue', 'green', 'clicked', 'clicked-effect');
+    cell.classList.remove('red', 'blue', 'green', 'skull', 'angel', 'clicked', 'clicked-effect');
     const colors = ['red', 'blue', 'green'];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
     cell.classList.add(randomColor);
@@ -92,12 +103,31 @@ function startGame() {
       endGame();
     }
   }, 1000);
+
+  // 해골과 천사 등장 스케줄링 (총 3번씩)
+  scheduleEntities('skull', 3, 5000, 55000); // 해골: 5초 ~ 55초
+  scheduleEntities('angel', 3, 5000, 55000); // 천사: 5초 ~ 55초
 }
 
 function endGame() {
   isGameOver = true;
   clearInterval(flickerIntervalId);
   clearInterval(gameIntervalId);
+
+  // 모든 해골 및 천사 타이머 정리
+  skullTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+  removeSkullTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+  angelTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+  removeAngelTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+  skullTimeoutIds = [];
+  removeSkullTimeoutIds = [];
+  angelTimeoutIds = [];
+  removeAngelTimeoutIds = [];
+
+  // 모든 셀에서 해골 및 천사 클래스 제거
+  cells.forEach(cell => {
+    cell.classList.remove('skull', 'angel');
+  });
 
   // 최종 점수 표시
   finalScoreSpan.textContent = score;
@@ -112,10 +142,13 @@ function startFlicker() {
     if (isGameOver) return;
 
     // 3~6개 정도 랜덤으로 동시에 깜빡이도록
-    const numberOfFlashes = Math.floor(Math.random() * 4) + 3; 
+    const numberOfFlashes = Math.floor(Math.random() * 4) + 3;
     for (let i = 0; i < numberOfFlashes; i++) {
       const randomIndex = Math.floor(Math.random() * cells.length);
       const randomCell = cells[randomIndex];
+
+      // 이미 해골이나 천사인 경우 제외
+      if (randomCell.classList.contains('skull') || randomCell.classList.contains('angel')) continue;
 
       // 이전 색상 제거
       randomCell.classList.remove('red', 'blue', 'green');
@@ -143,8 +176,131 @@ function adjustSpeed() {
   }
 }
 
+// 해골과 천사 등장 스케줄링 함수
+function scheduleEntities(entityType, totalEntities, minTime, maxTime) {
+  for (let i = 0; i < totalEntities; i++) {
+    const randomTime = Math.floor(Math.random() * (maxTime - minTime)) + minTime;
+    const timeoutId = setTimeout(() => showEntity(entityType), randomTime);
+    if (entityType === 'skull') {
+      skullTimeoutIds.push(timeoutId);
+    } else if (entityType === 'angel') {
+      angelTimeoutIds.push(timeoutId);
+    }
+  }
+}
+
+// 해골과 천사 등장 함수
+function showEntity(entityType) {
+  if (isGameOver) return;
+
+  if (entityType === 'skull') {
+    if (skullCount >= 3) return;
+  } else if (entityType === 'angel') {
+    if (angelCount >= 3) return;
+  }
+
+  let targetCells;
+  if (entityType === 'skull') {
+    // 현재 빨간색 칸만 필터링
+    targetCells = Array.from(cells).filter(cell => cell.classList.contains('red') && !cell.classList.contains('skull') && !cell.classList.contains('angel'));
+  } else if (entityType === 'angel') {
+    // 현재 파란색 칸만 필터링
+    targetCells = Array.from(cells).filter(cell => cell.classList.contains('blue') && !cell.classList.contains('skull') && !cell.classList.contains('angel'));
+  }
+
+  if (targetCells.length === 0) return; // 해당 색상 칸이 없으면 종료
+
+  const randomIndex = Math.floor(Math.random() * targetCells.length);
+  const targetCell = targetCells[randomIndex];
+
+  // 해당 칸에 해골 또는 천사 클래스 추가
+  targetCell.classList.add(entityType);
+
+  // 등장 사운드 재생
+  if (entityType === 'skull') {
+    if (skullSound) {
+      skullSound.currentTime = 0;
+      skullSound.play();
+    }
+    skullCount++;
+  } else if (entityType === 'angel') {
+    if (angelSound) {
+      angelSound.currentTime = 0;
+      angelSound.play();
+    }
+    angelCount++;
+  }
+
+  // 해당 칸이 5초 후에 자동으로 제거되도록 타이머 설정
+  const removeTimeoutId = setTimeout(() => {
+    targetCell.classList.remove(entityType);
+    const colors = ['red', 'blue', 'green'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    targetCell.classList.add(randomColor);
+    targetCell.removeAttribute('data-remove-timer');
+  }, 5000); // 5초 후 제거
+
+  if (entityType === 'skull') {
+    removeSkullTimeoutIds.push(removeTimeoutId);
+    targetCell.setAttribute('data-remove-timer', removeTimeoutId);
+  } else if (entityType === 'angel') {
+    removeAngelTimeoutIds.push(removeTimeoutId);
+    targetCell.setAttribute('data-remove-timer', removeTimeoutId);
+  }
+}
+
 function handleCellClick(cell) {
   if (isGameOver) return; // 게임 종료 후 클릭 무시
+
+  // 해골 칸 클릭 시 -100점 처리
+  if (cell.classList.contains('skull')) {
+    score -= 100;
+    scoreDisplay.textContent = `점수: ${score}`;
+    warningSound.currentTime = 0;
+    warningSound.play();
+
+    // 해골 칸을 다시 원래 색상으로 되돌림
+    cell.classList.remove('skull');
+    const colors = ['red', 'blue', 'green'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    cell.classList.add(randomColor);
+
+    // 해당 셀의 제거 타이머 정리
+    const removeTimeoutId = cell.getAttribute('data-remove-timer');
+    if (removeTimeoutId) {
+      clearTimeout(removeTimeoutId);
+      cell.removeAttribute('data-remove-timer');
+      // removeSkullTimeoutIds 배열에서 해당 타이머 제거
+      removeSkullTimeoutIds = removeSkullTimeoutIds.filter(id => id !== parseInt(removeTimeoutId));
+    }
+
+    return;
+  }
+
+  // 천사 칸 클릭 시 +100점 처리
+  if (cell.classList.contains('angel')) {
+    score += 100;
+    scoreDisplay.textContent = `점수: ${score}`;
+    successSound.currentTime = 0;
+    successSound.play();
+
+    // 천사 칸을 다시 원래 색상으로 되돌림
+    cell.classList.remove('angel');
+    const colors = ['red', 'blue', 'green'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    cell.classList.add(randomColor);
+
+    // 해당 셀의 제거 타이머 정리
+    const removeTimeoutId = cell.getAttribute('data-remove-timer');
+    if (removeTimeoutId) {
+      clearTimeout(removeTimeoutId);
+      cell.removeAttribute('data-remove-timer');
+      // removeAngelTimeoutIds 배열에서 해당 타이머 제거
+      removeAngelTimeoutIds = removeAngelTimeoutIds.filter(id => id !== parseInt(removeTimeoutId));
+    }
+
+    return;
+  }
 
   // 현재 색상 확인 후 점수 업데이트
   if (cell.classList.contains('red')) {
@@ -159,7 +315,7 @@ function handleCellClick(cell) {
   // green은 점수 변화 없음
 
   scoreDisplay.textContent = `점수: ${score}`;
-  
+
   // 속도 조절
   adjustSpeed();
 
@@ -236,9 +392,6 @@ homeButton.addEventListener('click', () => {
   window.location.reload(); // 페이지 새로고침하여 초기화
 });
 
-// 기존의 window.onclick 이벤트 리스너를 제거했습니다.
-// 이로 인해 모달 외부를 클릭해도 모달이 닫히지 않습니다.
-
 // Firebase에 점수 저장
 function saveScore(username, score) {
   db.collection("highScores").add({
@@ -298,10 +451,10 @@ function loadInitialHighScores() {
 function resetGame() {
   // 게임 화면 숨기기
   gameScreen.style.display = 'none';
-  
+
   // 모든 셀 초기화
   cells.forEach(cell => {
-    cell.classList.remove('red', 'blue', 'green', 'clicked', 'clicked-effect');
+    cell.classList.remove('red', 'blue', 'green', 'skull', 'angel', 'clicked', 'clicked-effect');
     const colors = ['red', 'blue', 'green'];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
     cell.classList.add(randomColor);
@@ -310,14 +463,22 @@ function resetGame() {
   // 타이머 및 점수 초기화
   score = 0;
   timeLeft = 60;
-  
+
   // 타이머 및 점수 표시 업데이트
   scoreDisplay.textContent = `점수: ${score}`;
   timerDisplay.textContent = `남은 시간: ${timeLeft}초`;
 
-  // 인터벌 클리어
+  // 인터벌 및 타이머 정리
   clearInterval(flickerIntervalId);
   clearInterval(gameIntervalId);
+  skullTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+  removeSkullTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+  angelTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+  removeAngelTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+  skullTimeoutIds = [];
+  removeSkullTimeoutIds = [];
+  angelTimeoutIds = [];
+  removeAngelTimeoutIds = [];
 
   // baseInterval 초기화
   baseInterval = 1000;
