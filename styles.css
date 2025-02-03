@@ -243,7 +243,7 @@ h1 {
 .adsense-container {
     width: 100%;
     max-width: 728px; /* 데스크탑에서의 최대 너비 설정 */
-    margin: 20px auto; /* 중앙 정렬 및 상하 마진 설정 */
+    margin: 0 auto 20px; /* 중앙 정렬 및 상하 마진 설정 */
     box-sizing: border-box; /* 패딩과 보더 포함 */
     padding: 10px; /* 내부 여백 설정 */
     border: 1px solid #ccc; /* 경계선 설정 */
