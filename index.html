@@ -17,9 +17,11 @@
     <button id="startGameButton">게임 시작</button>
     <div class="mode-select">
       <p>Mode Select</p>
-      <label><input type="radio" name="gameMode" value="speed" checked /> Speed Mode</label>
-      <label><input type="radio" name="gameMode" value="pattern" /> Pattern Mode</label>
-      <label><input type="radio" name="gameMode" value="mix" /> Speed + Pattern</label>
+      <div class="mode-buttons">
+        <button class="mode-button active" data-mode="speed">Speed</button>
+        <button class="mode-button" data-mode="pattern">Pattern</button>
+        <button class="mode-button" data-mode="mix">Mix</button>
+      </div>
     </div>
     <h2>점수 기록</h2>
     <div class="high-scores-container">
@@ -42,8 +44,7 @@
   <!-- 게임 화면 -->
   <div id="gameScreen" class="screen" style="display: none;">
     <div class="info-container">
-      <div id="score">점수: 0</div>
-      <div id="timer">남은 시간: 60초</div>
+      <div id="score">점수: 0</div>      <div id="timer">?? ??: 60?</div>
       <div id="modeLabel" class="mode-label">Mode: Speed</div>
     </div>
     
@@ -81,6 +82,11 @@
       <span class="close">&times;</span>
       <h2>높은 점수 기록</h2>
       <button id="homeButton" class="home-button">처음으로</button>
+      <div class="score-mode-tabs">
+        <button class="score-mode-button active" data-mode="speed">Speed</button>
+        <button class="score-mode-button" data-mode="pattern">Pattern</button>
+        <button class="score-mode-button" data-mode="mix">Mix</button>
+      </div>
       <div class="high-scores-container">
         <ol id="highScoresList"></ol>
       </div>

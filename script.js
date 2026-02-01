@@ -17,7 +17,8 @@ const startScreen = document.getElementById('startScreen');
 const startGameButton = document.getElementById('startGameButton');
 const initialHighScoresList = document.getElementById('initialHighScoresList');
 const modeLabel = document.getElementById('modeLabel');
-const modeRadios = document.querySelectorAll('input[name="gameMode"]');
+const modeButtons = document.querySelectorAll('.mode-button');
+const scoreModeButtons = document.querySelectorAll('.score-mode-button');
 
 const gameScreen = document.getElementById('gameScreen');
 const gameGrid = document.getElementById('gameGrid');
@@ -52,6 +53,7 @@ let skullCount = 0; // 해골 등장 횟수
 let angelCount = 0; // 천사 등장 횟수
 let isGameOver = false;
 let selectedMode = 'speed';
+let currentScoreMode = 'speed';
 let activePattern = null;
 let patternStep = 0;
 let patternSeed = 0;
@@ -72,7 +74,23 @@ const cells = document.querySelectorAll('.cell');
 const gridSize = 5;
 
 // 게임 시작 화면에서 높은 점수 로드
-loadInitialHighScores();
+loadInitialHighScores(selectedMode);
+updateModeButtons();
+updateScoreModeButtons();
+
+modeButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const mode = button.getAttribute('data-mode');
+    setSelectedMode(mode);
+  });
+});
+
+scoreModeButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const mode = button.getAttribute('data-mode');
+    setScoreMode(mode);
+  });
+});
 
 // "게임 시작" 버튼 클릭 시 게임 화면으로 전환
 startGameButton.addEventListener('click', () => {
@@ -87,7 +105,9 @@ function startGame() {
   score = 0;
   timeLeft = 60; // 60 seconds
   selectedMode = getSelectedMode();
+  currentScoreMode = selectedMode;
   updateModeLabel();
+  updateScoreModeButtons();
   scoreDisplay.textContent = `점수: ${score}`;
   timerDisplay.textContent = `남은 시간: ${timeLeft}초`;
 
@@ -299,8 +319,36 @@ const ringPulsePattern = {
 };
 
 function getSelectedMode() {
-  const checked = Array.from(modeRadios).find(radio => radio.checked);
-  return checked ? checked.value : 'speed';
+  return selectedMode || 'speed';
+}
+
+function setSelectedMode(mode) {
+  selectedMode = mode;
+  currentScoreMode = mode;
+  updateModeLabel();
+  updateModeButtons();
+  updateScoreModeButtons();
+  loadInitialHighScores(selectedMode);
+}
+
+function setScoreMode(mode) {
+  currentScoreMode = mode;
+  updateScoreModeButtons();
+  displayHighScores(currentScoreMode);
+}
+
+function updateModeButtons() {
+  modeButtons.forEach(button => {
+    const mode = button.getAttribute('data-mode');
+    button.classList.toggle('active', mode === selectedMode);
+  });
+}
+
+function updateScoreModeButtons() {
+  scoreModeButtons.forEach(button => {
+    const mode = button.getAttribute('data-mode');
+    button.classList.toggle('active', mode === currentScoreMode);
+  });
 }
 
 function updateModeLabel() {
@@ -508,16 +556,22 @@ submitNameButton.addEventListener('click', () => {
     return;
   }
   saveScore(username, score);
+  currentScoreMode = selectedMode;
+  updateScoreModeButtons();
+  currentScoreMode = selectedMode;
+  updateScoreModeButtons();
   nameModal.style.display = 'none';
   highScoresModal.style.display = 'block';
-  displayHighScores();
+  displayHighScores(currentScoreMode);
 });
 
 // 닫기 버튼 클릭 시
 closeModalButton.addEventListener('click', () => {
+  currentScoreMode = selectedMode;
+  updateScoreModeButtons();
   nameModal.style.display = 'none';
   highScoresModal.style.display = 'block';
-  displayHighScores();
+  displayHighScores(currentScoreMode);
 });
 
 // 홈 버튼 클릭 시
@@ -531,6 +585,7 @@ function saveScore(username, score) {
   db.collection("highScores").add({
     name: username,
     score: score,
+    mode: selectedMode,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   })
   .then(() => {
@@ -542,42 +597,58 @@ function saveScore(username, score) {
 }
 
 // Firebase에서 높은 점수 순으로 불러오기
-function displayHighScores() {
-  highScoresList.innerHTML = ""; // 기존 리스트 초기화
+function displayHighScores(mode) {
+  highScoresList.innerHTML = ""; // ?? ??? ???
   db.collection("highScores")
+    .where("mode", "==", mode)
     .orderBy("score", "desc")
-    .limit(10) // 상위 10개만 표시
+    .limit(10)
     .get()
     .then((querySnapshot) => {
+      if (querySnapshot.empty) {
+        const listItem = document.createElement('li');
+        listItem.textContent = 'No scores yet.';
+        highScoresList.appendChild(listItem);
+        return;
+      }
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const listItem = document.createElement('li');
-        listItem.textContent = `${data.name}: ${data.score}점`;
+        listItem.textContent = `${data.name}: ${data.score} pts`;
+
         highScoresList.appendChild(listItem);
       });
     })
     .catch((error) => {
-      console.error("점수 불러오기 오류: ", error);
+      console.error('?? ???? ??: ', error);
     });
 }
 
 // 시작 화면에서 초기 높은 점수 로드
-function loadInitialHighScores() {
-  initialHighScoresList.innerHTML = ""; // 기존 리스트 초기화
+function loadInitialHighScores(mode) {
+  initialHighScoresList.innerHTML = ""; // ?? ??? ???
   db.collection("highScores")
+    .where("mode", "==", mode)
     .orderBy("score", "desc")
-    .limit(5) // 상위 5개만 표시
+    .limit(5)
     .get()
     .then((querySnapshot) => {
+      if (querySnapshot.empty) {
+        const listItem = document.createElement('li');
+        listItem.textContent = 'No scores yet.';
+        initialHighScoresList.appendChild(listItem);
+        return;
+      }
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const listItem = document.createElement('li');
-        listItem.textContent = `${data.name}: ${data.score}점`;
+        listItem.textContent = `${data.name}: ${data.score} pts`;
+
         initialHighScoresList.appendChild(listItem);
       });
     })
     .catch((error) => {
-      console.error("초기 점수 불러오기 오류: ", error);
+      console.error('?? ?? ???? ??: ', error);
     });
 }
 
