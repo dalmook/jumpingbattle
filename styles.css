@@ -320,9 +320,7 @@ h1 {
   box-shadow: 0 6px 14px rgba(217, 132, 59, 0.35);
 }
 
-
-
-/* 5x5 격자 컨테이너 */
+/* 5x5 ?? ???? */
 .grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -330,11 +328,13 @@ h1 {
   gap: 10px;
   width: 100%;
   max-width: 500px;
-  aspect-ratio: 1 / 1; /* 정사각형 유지 */
-  margin: 20px auto; /* 중앙 정렬 */
+  aspect-ratio: 1 / 1;
+  margin: 20px auto;
+  box-shadow: 0 0 25px rgba(255,255,255,0.15) inset, 0 0 25px rgba(0,0,0,0.35);
+  border-radius: 14px;
 }
 
-/* 각 칸 스타일 */
+/* ? ? ??? */
 .cell {
   width: 100%;
   height: 100%;
@@ -346,57 +346,51 @@ h1 {
   border-radius: 8px;
 }
 
-/* 해골 칸 스타일 */
+/* ?? ? ??? */
 .skull {
-  background-image: url('images/skull.png'); /* 해골 이미지 경로 */
-  background-size: contain; /* 이미지가 칸 안에 완전히 들어가도록 설정 */
+  background-image: url('images/skull.png');
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   animation: blinkSkull 1s infinite, appearSkull 0.3s ease forwards;
 }
 
-/* 천사 칸 스타일 */
+/* ?? ? ??? */
 .angel {
-  background-image: url('images/angel.png'); /* 천사 이미지 경로 */
-  background-size: contain; /* 이미지가 칸 안에 완전히 들어가도록 설정 */
+  background-image: url('images/angel.png');
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   animation: blinkAngel 1s infinite, appearAngel 0.3s ease forwards;
 }
 
-/* 해골 깜빡이는 애니메이션 */
 @keyframes blinkSkull {
   0% { box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8); }
   50% { box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.4); }
   100% { box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8); }
 }
 
-/* 천사 깜빡이는 애니메이션 */
 @keyframes blinkAngel {
   0% { box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8); }
   50% { box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.4); }
   100% { box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8); }
 }
 
-/* 해골 등장 애니메이션 */
 @keyframes appearSkull {
   from { transform: scale(0); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
-/* 천사 등장 애니메이션 */
 @keyframes appearAngel {
   from { transform: scale(0); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
-/* 클릭 시 효과 */
 .cell:active {
   transform: scale(0.95);
   box-shadow: 0 3px 10px rgba(0,0,0,0.2) inset;
 }
 
-/* 색상별 클래스 */
 .red {
   background-color: #ff4d4d;
   animation: blinkRed 1s alternate infinite;
@@ -412,7 +406,6 @@ h1 {
   animation: blinkGreen 1s alternate infinite;
 }
 
-/* 반짝이는 애니메이션 */
 @keyframes blinkRed {
   0% { box-shadow: 0 0 10px 5px rgba(255, 77, 77, 0.6); }
   100% { box-shadow: 0 0 10px 5px rgba(255, 77, 77, 0.1); }
@@ -428,13 +421,11 @@ h1 {
   100% { box-shadow: 0 0 10px 5px rgba(77, 255, 77, 0.1); }
 }
 
-/* 회색으로 잠시 변경될 때의 스타일 */
 .clicked {
   background-color: #cccccc !important;
   box-shadow: none !important;
 }
 
-/* 클릭 시 추가 애니메이션 효과 */
 @keyframes clickEffect {
   0% { transform: scale(1); opacity: 1; }
   100% { transform: scale(1.3); opacity: 0; }
@@ -444,16 +435,6 @@ h1 {
   animation: clickEffect 0.3s forwards;
 }
 
-/* 점수 안내 문구 */
-.info p {
-  margin-top: 20px;
-  color: #ffffff;
-  font-size: 1em;
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
-}
-}
-/* 광고 컨테이너 스타일 */
-/* 광고 컨테이너 스타일 */
 .adsense-container {
     width: 100%;
     max-width: 728px; /* 데스크탑에서의 최대 너비 설정 */
@@ -462,8 +443,10 @@ h1 {
     padding: 10px; /* 내부 여백 설정 */
     border: 1px solid #ccc; /* 경계선 설정 */
     overflow: hidden; /* 내용이 넘칠 경우 숨김 처리 */
-    transition: max-height 0.3s ease; /* 부드러운 전환 효과 */
+    transition: max-height 0.3s ease; /*
 }
+
+/* 부드러운 전환 효과 */
 /* 반응형 디자인 */
 @media (max-width: 600px) {
   .adsense-container {
@@ -544,65 +527,8 @@ h1 {
     padding: 5px;
   }
 }
-}
-  h1 {
-    font-size: 1.5em;
-  }
 
-  
-  #score, #timer {
-    font-size: 1.2em;
-  }
-
-  .info p {
-    font-size: 0.85em;
-    white-space: nowrap;
-    letter-spacing: -0.2px;
-  }
-
-  #startGameButton {
-    width: 100%;
-    padding: 15px;
-  }
-
-  .mode-select {
-    align-items: flex-start;
-  }
-
-  .mode-buttons {
-    grid-template-columns: 1fr;
-  }
-
-  .mode-button {
-    font-size: 0.95em;
-  }
-
-  .score-mode-tabs {
-    grid-template-columns: 1fr;
-  }
-
-  .score-mode-button {
-    font-size: 0.95em;
-  }
-
-  /* 모바일 화면에서 격자 중앙 정렬 보정 */
-  .grid {
-    width: 100%;
-    max-width: 400px;
-    aspect-ratio: 1 / 1;
-  }
-
-  .high-scores-container {
-    padding: 10px;
-  }
-
-  .high-scores-container li {
-    font-size: 1em;
-    padding: 5px;
-  }
-}
-
-/* 모달 스타일 */
+/* ?? ??? */
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
@@ -712,7 +638,7 @@ h1 {
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* 홈 버튼 스타일 */
+/* ? ?? ??? */
 .home-button {
   position: absolute;
   top: 15px;
