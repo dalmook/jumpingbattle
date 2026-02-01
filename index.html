@@ -44,14 +44,23 @@
   <!-- 게임 화면 -->
   <div id="gameScreen" class="screen" style="display: none;">
     <div class="info-container">
-      <div id="score">점수: 0</div>      <div id="timer">?? ??: 60?</div>
-      <div id="modeLabel" class="mode-label">Mode: Speed</div>
+      <div class="hud-row">
+        <div id="score" class="hud-item"><span class="hud-icon hud-score"></span><span class="hud-text">점수: 0</span></div>
+        <div id="timer" class="hud-item"><span class="hud-icon hud-time"></span><span class="hud-text">남은 시간: 60초</span></div>
+      </div>
+      <div class="hud-row hud-row-mode">
+        <div id="modeLabel" class="hud-item mode-label"><span class="hud-icon hud-mode"></span><span class="hud-text">Mode: Speed</span></div>
+      </div>
     </div>
     
     <div class="grid" id="gameGrid"></div>
     
     <div class="info">
-      <p>빨간색: -5점 · 파란색: +5점 · 초록색: 안전(0점)</p>
+      <p class="rule-line">
+        <span class="rule-item"><span class="rule-dot red"></span>-5</span>
+        <span class="rule-item"><span class="rule-dot blue"></span>+5</span>
+        <span class="rule-item"><span class="rule-dot green"></span>0</span>
+      </p>
     </div>
   </div>
   
