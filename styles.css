@@ -64,6 +64,35 @@ h1 {
   transform: translateY(-2px);
 }
 
+.mode-select {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.mode-select p {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+  color: #333;
+}
+
+.mode-select label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1em;
+  color: #222;
+}
+
+.mode-label {
+  font-size: 1.1em;
+  color: #ffffff;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+}
+
 .high-scores-container {
   margin-top: 15px;
   width: 100%;
@@ -277,6 +306,14 @@ h1 {
   #startGameButton {
     width: 100%;
     padding: 15px;
+  }
+
+  .mode-select {
+    align-items: flex-start;
+  }
+
+  .mode-select label {
+    font-size: 0.95em;
   }
 
   /* 모바일 화면에서 격자 중앙 정렬 보정 */

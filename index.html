@@ -15,6 +15,12 @@
   <div id="startScreen" class="screen">
     <h1>핑거 배틀</h1>
     <button id="startGameButton">게임 시작</button>
+    <div class="mode-select">
+      <p>Mode Select</p>
+      <label><input type="radio" name="gameMode" value="speed" checked /> Speed Mode</label>
+      <label><input type="radio" name="gameMode" value="pattern" /> Pattern Mode</label>
+      <label><input type="radio" name="gameMode" value="mix" /> Speed + Pattern</label>
+    </div>
     <h2>점수 기록</h2>
     <div class="high-scores-container">
       <ol id="initialHighScoresList"></ol>
@@ -38,6 +44,7 @@
     <div class="info-container">
       <div id="score">점수: 0</div>
       <div id="timer">남은 시간: 60초</div>
+      <div id="modeLabel" class="mode-label">Mode: Speed</div>
     </div>
     
     <div class="grid" id="gameGrid"></div>

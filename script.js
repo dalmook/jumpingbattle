@@ -16,6 +16,8 @@ const db = firebase.firestore();
 const startScreen = document.getElementById('startScreen');
 const startGameButton = document.getElementById('startGameButton');
 const initialHighScoresList = document.getElementById('initialHighScoresList');
+const modeLabel = document.getElementById('modeLabel');
+const modeRadios = document.querySelectorAll('input[name="gameMode"]');
 
 const gameScreen = document.getElementById('gameScreen');
 const gameGrid = document.getElementById('gameGrid');
@@ -41,6 +43,7 @@ let score = 0;
 let timeLeft = 60; // 60초로 변경
 let gameIntervalId;
 let flickerIntervalId;
+let patternIntervalId;
 let skullTimeoutIds = []; // 해골 등장 타이머 배열
 let removeSkullTimeoutIds = []; // 해골 제거 타이머 배열
 let angelTimeoutIds = []; // 천사 등장 타이머 배열
@@ -48,6 +51,10 @@ let removeAngelTimeoutIds = []; // 천사 제거 타이머 배열
 let skullCount = 0; // 해골 등장 횟수
 let angelCount = 0; // 천사 등장 횟수
 let isGameOver = false;
+let selectedMode = 'speed';
+let activePattern = null;
+let patternStep = 0;
+let patternSeed = 0;
 
 // baseInterval을 startFlicker 호출 전에 선언
 let baseInterval = 1000; // 기본 속도 (1초)
@@ -62,6 +69,7 @@ for (let i = 0; i < 25; i++) {
 
 // 셀들을 배열로 가져오기
 const cells = document.querySelectorAll('.cell');
+const gridSize = 5;
 
 // 게임 시작 화면에서 높은 점수 로드
 loadInitialHighScores();
@@ -77,7 +85,9 @@ startGameButton.addEventListener('click', () => {
 function startGame() {
   isGameOver = false;
   score = 0;
-  timeLeft = 60; // 60초로 변경
+  timeLeft = 60; // 60 seconds
+  selectedMode = getSelectedMode();
+  updateModeLabel();
   scoreDisplay.textContent = `점수: ${score}`;
   timerDisplay.textContent = `남은 시간: ${timeLeft}초`;
 
@@ -93,7 +103,14 @@ function startGame() {
   });
 
   // 깜빡임 시작
-  startFlicker();
+  if (selectedMode === 'speed') {
+    startFlicker();
+  } else if (selectedMode === 'pattern') {
+    startPatternMode();
+  } else if (selectedMode === 'mix') {
+    startFlicker();
+    startPatternMode();
+  }
 
   // 타이머 시작
   gameIntervalId = setInterval(() => {
@@ -113,6 +130,9 @@ function endGame() {
   isGameOver = true;
   clearInterval(flickerIntervalId);
   clearInterval(gameIntervalId);
+  clearInterval(patternIntervalId);
+  activePattern = null;
+  patternStep = 0;
 
   // 모든 해골 및 천사 타이머 정리
   skullTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
@@ -148,7 +168,7 @@ function startFlicker() {
       const randomCell = cells[randomIndex];
 
       // 이미 해골이나 천사인 경우 제외
-      if (randomCell.classList.contains('skull') || randomCell.classList.contains('angel')) continue;
+      if (randomCell.classList.contains('skull') || randomCell.classList.contains('angel') || randomCell.classList.contains('clicked')) continue;
 
       // 이전 색상 제거
       randomCell.classList.remove('red', 'blue', 'green');
@@ -163,6 +183,7 @@ function startFlicker() {
 
 // 점수가 높아질수록 interval을 점점 빠르게
 function adjustSpeed() {
+  if (selectedMode !== 'speed' && selectedMode !== 'mix') return;
   // 최저한의 인터벌(200ms)까지만 줄어들도록 제한
   let newInterval = 1000 - (score * 10);
   if (newInterval < 200) {
@@ -177,6 +198,119 @@ function adjustSpeed() {
 }
 
 // 해골과 천사 등장 스케줄링 함수
+function startPatternMode() {
+  patternIntervalId = setInterval(() => {
+    if (isGameOver) return;
+    runPatternTick();
+  }, 800);
+}
+
+function runPatternTick() {
+  if (!activePattern || patternStep >= activePattern.duration) {
+    activePattern = pickRandomPattern();
+    patternStep = 0;
+  }
+  activePattern.apply(patternStep);
+  patternStep++;
+}
+
+function pickRandomPattern() {
+  const patterns = [rowSweepPattern, columnSweepPattern, crossPulsePattern, checkerPattern, ringPulsePattern];
+  patternSeed++;
+  const index = patternSeed % patterns.length;
+  return patterns[index];
+}
+
+function setCellColor(cell, color) {
+  if (!cell) return;
+  if (cell.classList.contains('skull') || cell.classList.contains('angel') || cell.classList.contains('clicked')) return;
+  cell.classList.remove('red', 'blue', 'green');
+  cell.classList.add(color);
+}
+
+function getCell(row, col) {
+  if (row < 0 || col < 0 || row >= gridSize || col >= gridSize) return null;
+  return cells[row * gridSize + col];
+}
+
+const rowSweepPattern = {
+  name: 'rowSweep',
+  duration: gridSize,
+  apply(step) {
+    const row = step % gridSize;
+    for (let col = 0; col < gridSize; col++) {
+      setCellColor(getCell(row, col), 'blue');
+      setCellColor(getCell(row - 1, col), 'green');
+    }
+  }
+};
+
+const columnSweepPattern = {
+  name: 'columnSweep',
+  duration: gridSize,
+  apply(step) {
+    const col = step % gridSize;
+    for (let row = 0; row < gridSize; row++) {
+      setCellColor(getCell(row, col), 'red');
+      setCellColor(getCell(row, col - 1), 'green');
+    }
+  }
+};
+
+const crossPulsePattern = {
+  name: 'crossPulse',
+  duration: 2,
+  apply(step) {
+    const mid = Math.floor(gridSize / 2);
+    const color = step % 2 === 0 ? 'blue' : 'red';
+    for (let i = 0; i < gridSize; i++) {
+      setCellColor(getCell(mid, i), color);
+      setCellColor(getCell(i, mid), color);
+    }
+  }
+};
+
+const checkerPattern = {
+  name: 'checker',
+  duration: 2,
+  apply(step) {
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        const isEven = (row + col + step) % 2 === 0;
+        setCellColor(getCell(row, col), isEven ? 'blue' : 'red');
+      }
+    }
+  }
+};
+
+const ringPulsePattern = {
+  name: 'ringPulse',
+  duration: 3,
+  apply(step) {
+    const outer = step % 2 === 0 ? 'red' : 'blue';
+    const inner = step % 2 === 0 ? 'green' : 'blue';
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        const isEdge = row === 0 || col === 0 || row === gridSize - 1 || col === gridSize - 1;
+        setCellColor(getCell(row, col), isEdge ? outer : inner);
+      }
+    }
+  }
+};
+
+function getSelectedMode() {
+  const checked = Array.from(modeRadios).find(radio => radio.checked);
+  return checked ? checked.value : 'speed';
+}
+
+function updateModeLabel() {
+  if (!modeLabel) return;
+  let label = 'Mode: Speed';
+  if (selectedMode === 'pattern') label = 'Mode: Pattern';
+  if (selectedMode === 'mix') label = 'Mode: Speed + Pattern';
+  modeLabel.textContent = label;
+}
+
 function scheduleEntities(entityType, totalEntities, minTime, maxTime) {
   for (let i = 0; i < totalEntities; i++) {
     const randomTime = Math.floor(Math.random() * (maxTime - minTime)) + minTime;
@@ -471,6 +605,9 @@ function resetGame() {
   // 인터벌 및 타이머 정리
   clearInterval(flickerIntervalId);
   clearInterval(gameIntervalId);
+  clearInterval(patternIntervalId);
+  activePattern = null;
+  patternStep = 0;
   skullTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
   removeSkullTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
   angelTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
