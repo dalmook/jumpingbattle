@@ -611,12 +611,16 @@ function displayHighScores(mode) {
         highScoresList.appendChild(listItem);
         return;
       }
+      let rank = 1;
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const listItem = document.createElement('li');
         listItem.textContent = `${data.name}: ${data.score} pts`;
-
+        if (rank <= 3) {
+          listItem.classList.add(`rank-${rank}`);
+        }
         highScoresList.appendChild(listItem);
+        rank += 1;
       });
     })
     .catch((error) => {
@@ -639,12 +643,16 @@ function loadInitialHighScores(mode) {
         initialHighScoresList.appendChild(listItem);
         return;
       }
+      let rank = 1;
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const listItem = document.createElement('li');
         listItem.textContent = `${data.name}: ${data.score} pts`;
-
+        if (rank <= 3) {
+          listItem.classList.add(`rank-${rank}`);
+        }
         initialHighScoresList.appendChild(listItem);
+        rank += 1;
       });
     })
     .catch((error) => {
