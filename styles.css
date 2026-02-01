@@ -202,6 +202,17 @@ h1 {
   font-size: 1.5em;
 }
 
+.info-container {
+  min-height: 56px;
+  align-items: center;
+}
+
+#score, #timer, .mode-label {
+  white-space: nowrap;
+  min-width: 140px;
+  text-align: center;
+}
+
 
 #score, #timer, .mode-label {
   color: #f8f9ff;
@@ -387,7 +398,17 @@ h1 {
         max-width: 100%; /* 모바일에서는 전체 너비 사용 */
         max-height: 120px; /* 모바일에서의 최대 높이 설정 */
         overflow-y: scroll; /* 세로 스크롤 추가 */
+  
+  .info-container {
+    min-height: 56px;
+    padding: 8px 10px;
   }
+
+  #score, #timer, .mode-label {
+    font-size: 1.05em;
+    min-width: 120px;
+  }
+}
   h1 {
     font-size: 1.5em;
   }
